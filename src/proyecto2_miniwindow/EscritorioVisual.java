@@ -5,6 +5,7 @@
 package proyecto2_miniwindow;
 
 import Apps.CMDVisual;
+import Instagram.MenuPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,6 +27,7 @@ import javax.swing.SwingUtilities;
  */
 public class EscritorioVisual extends JFrame{
     CMDVisual cmdV;
+    MenuPrincipal menuInsta;
     public EscritorioVisual() {
         // Configuración de la ventana principal
         setTitle("Escritorio");
@@ -75,8 +77,8 @@ public class EscritorioVisual extends JFrame{
     private class InstagramAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Lógica para abrir Instagram
-            JOptionPane.showMessageDialog(null, "Abriendo Instagram...");
+            menuInsta=new MenuPrincipal();
+            menuInsta.setVisible(true);
         }
     }
 
@@ -120,9 +122,5 @@ public class EscritorioVisual extends JFrame{
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new EscritorioVisual().setVisible(true);
-        });
-    }
+    
 }

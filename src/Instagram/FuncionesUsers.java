@@ -4,6 +4,9 @@
  */
 package Instagram;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 /**
@@ -11,8 +14,19 @@ import java.util.ArrayList;
  * @author User
  */
 public class FuncionesUsers {
+    private RandomAccessFile users;
     private ArrayList<FormatoUsers> cuentas;
-        
+    
+    public FuncionesUsers(){
+        try{
+            File mf = new File("Instagram");
+            mf.mkdir();
+            users=new RandomAccessFile("Instagram/users.ins","rw");
+        }catch(IOException e){
+            System.out.println("Error");
+        }
+    }
+    //Editar
     public FormatoUsers buscar(String user){
         for (FormatoUsers cuenta : cuentas) {
             if (cuenta != null && cuenta.getUser().equals(user)) {
@@ -22,9 +36,21 @@ public class FuncionesUsers {
         return null;
     }
     
+    /*
+    Formato users.ins
+    
+    String usuario
+    String nombre
+    String contra
+    char genero
+    int  edad
+    Date entrada
+    boolean estado
+    
+    */
     public boolean agregarCuenta(String name, String password, char genero, String user, int edad){
         if (buscar(user) == null) {
-            cuentas.add(new FormatoUsers(name, password, genero, user, edad));
+            
             return true;
         }
         return false;
