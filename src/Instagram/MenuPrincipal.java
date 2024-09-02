@@ -11,10 +11,18 @@ package Instagram;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MenuPrincipal extends JFrame{
     InstagramVisual insta;
+    FuncionesUsers users;
+    public String usernameActual;
+    
     public MenuPrincipal() {
+        users = new FuncionesUsers();
         setTitle("Iniciar sesión");
         setSize(400, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -75,10 +83,29 @@ public class MenuPrincipal extends JFrame{
         add(loginButton, gbc);
 
         loginButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso", "Login", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
-            insta = new InstagramVisual();
-            insta.setVisible(true);
+            try {
+                String username = usernameField.getText();
+                char[] password = passwordField.getPassword();
+
+                if(!username.isEmpty() && password.length != 0) {
+                    String passwordString = new String(password);
+                    if(users.buscarLogin(username, passwordString)) {
+                        JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso", "Login", JOptionPane.INFORMATION_MESSAGE);
+                        dispose();
+                        usernameActual=username;
+                        insta = new InstagramVisual(this);
+                        insta.setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Inicio de sesión fallido", "Login", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Recuerde llenar todos los campos solicitados.", "Login", JOptionPane.INFORMATION_MESSAGE);
+                }
+                Arrays.fill(password, '0');
+            } catch (IOException ex) {
+                Logger.getLogger(MenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         });
 
         JLabel registerLabel = new JLabel("¿No tienes una cuenta?");
