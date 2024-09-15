@@ -65,7 +65,7 @@ public class MenuPrincipal extends JFrame{
         gbc.gridy = 3;
         add(usernameField, gbc);
         
-        JLabel passwordLabel = new JLabel("Contraseña:");
+        JLabel passwordLabel = new JLabel("Contraseña: ");
         gbc.gridy = 4;
         add(passwordLabel, gbc);
 

@@ -5,6 +5,10 @@
 package proyecto2_miniwindow;
 
 import Apps.CMDVisual;
+import Apps.NavegadorArchivosUsuario;
+import Apps.EditorDeTexto;
+import Apps.ReproductorMusical;
+import Apps.VisorDeImagenes;
 import Instagram.MenuPrincipal;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import java.io.File;
 
 /**
  *
@@ -28,9 +33,18 @@ import javax.swing.SwingUtilities;
 public class EscritorioVisual extends JFrame{
     CMDVisual cmdV;
     MenuPrincipal menuInsta;
-    public EscritorioVisual() {
+    NavegadorArchivosUsuario navegador;
+    ReproductorMusical reproductor;
+    EditorDeTexto editor;
+    
+    private String nombreUsuario;
+     
+        // Almacena el nombre del usuario
+        
+     public EscritorioVisual(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario; 
         // Configuración de la ventana principal
-        setTitle("Escritorio");
+        setTitle("Escritorio de " + nombreUsuario);  // Personaliza el título con el nombre del usuario
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -85,42 +99,54 @@ public class EscritorioVisual extends JFrame{
     private class CMDAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            cmdV=new CMDVisual();
+            cmdV=new CMDVisual(nombreUsuario);
             cmdV.setVisible(true);
         }
     }
 
-    private class EditorTextoAction implements ActionListener {
+       private class EditorTextoAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Lógica para abrir Editor de Texto
-            JOptionPane.showMessageDialog(null, "Abriendo Editor de Texto...");
+            // Instanciar y mostrar el editor de texto con el nombre del usuario
+            EditorDeTexto editor = new EditorDeTexto(nombreUsuario);
+            editor.setVisible(true);
         }
     }
 
     private class NavegadorAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Lógica para abrir Navegador
-            JOptionPane.showMessageDialog(null, "Abriendo Navegador...");
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Usa el nombre del usuario autenticado
+        if (nombreUsuario != null && !nombreUsuario.isEmpty()) {
+            File carpetaUsuario = new File(System.getProperty("user.dir") + File.separator + "Z" + File.separator + nombreUsuario);
+            if (carpetaUsuario.exists()) {
+                NavegadorArchivosUsuario navegador = new NavegadorArchivosUsuario(carpetaUsuario);
+                navegador.setVisible(true);
+            } else {
+                System.out.println("El directorio del usuario no existe: " + carpetaUsuario.getAbsolutePath());
+            }
+        } else {
+            System.out.println("Error: El nombre de usuario es nulo o vacío.");
         }
     }
+}
+
 
     private class ReproductorMusicaAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Lógica para abrir Reproductor de Música
-            JOptionPane.showMessageDialog(null, "Abriendo Reproductor de Música...");
+            ReproductorMusical reproductor = new ReproductorMusical(nombreUsuario);
+            reproductor.setVisible(true);
         }
     }
-
     private class VisorImagenesAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Lógica para abrir Visor de Imágenes
-            JOptionPane.showMessageDialog(null, "Abriendo Visor de Imágenes...");
-        }
-    }
+         public void actionPerformed(ActionEvent e) {
+            VisorDeImagenes visor = new VisorDeImagenes(nombreUsuario);
+            visor.setLocationRelativeTo(null);
+            visor.setVisible(true);
+            }
 
     
 }
+}
+

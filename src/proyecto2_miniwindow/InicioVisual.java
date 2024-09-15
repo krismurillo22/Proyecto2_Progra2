@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package proyecto2_miniwindow;
 
 import java.awt.*;
@@ -10,18 +6,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import javax.swing.*;
+import java.io.File;
 
-/**
- *
- * @author User
- */
 public class InicioVisual extends JFrame {
-    
+
     EscritorioVisual escritorio;
+    SistemaArchivos sistemaArchivos = new SistemaArchivos();  // Instancia para manejar archivos y usuarios
+    
     public InicioVisual() {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         JPanel panel = new JPanel() {
             private Image fondo;
 
@@ -60,14 +55,14 @@ public class InicioVisual extends JFrame {
 
         PlaceholderTextField usernameField = new PlaceholderTextField("Usuario");
         usernameField.setFont(new Font("Arial", Font.ITALIC, 24));
-        Dimension fieldSize = new Dimension(300, 40); 
+        Dimension fieldSize = new Dimension(300, 40);
         usernameField.setPreferredSize(fieldSize);
         gbc.gridy = 1;
         gbc.gridwidth = 2;
         panel.add(usernameField, gbc);
         PlaceholderPasswordField passwordField = new PlaceholderPasswordField("Contraseña");
         passwordField.setFont(new Font("Arial", Font.ITALIC, 24));
-        passwordField.setPreferredSize(fieldSize); 
+        passwordField.setPreferredSize(fieldSize);
         gbc.gridy = 2;
         gbc.gridwidth = 1;
         panel.add(passwordField, gbc);
@@ -80,32 +75,71 @@ public class InicioVisual extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         panel.add(loginButton, gbc);
 
+        // Botón para agregar nuevo usuario
+        JButton agregarUsuarioButton = new JButton("Agregar Usuario");
+        agregarUsuarioButton.setFont(new Font("Arial", Font.PLAIN, 24));
+        gbc.gridy = 4; // Coloca el botón debajo del de iniciar sesión
+        panel.add(agregarUsuarioButton, gbc);
+
+        // Lógica de login
         loginButton.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword()).trim();
+
+        // Verifica si ambos campos están vacíos
+        if (username.isEmpty() && password.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese su usuario y contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese su usuario.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese su contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // Verificación de usuario en el sistema de archivos
+            if (sistemaArchivos.verificarUsuario(username, password)) {
+                // Aquí debes pasar el nombre de usuario al escritorio
+                escritorio = new EscritorioVisual(username);  
+                escritorio.setVisible(true);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+});
+
+
+        // Lógica para agregar un nuevo usuario
+        agregarUsuarioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText().trim();
-                String password = new String(passwordField.getPassword()).trim();
-                
-                // Verifica si ambos campos están vacíos
-                if (username.isEmpty() && password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor, ingrese su usuario y contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
-                } else if (username.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor, ingrese su usuario.", "Error", JOptionPane.ERROR_MESSAGE);
-                } else if (password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor, ingrese su contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
+                // Mostrar un cuadro de diálogo para pedir el nombre y contraseña del nuevo usuario
+                String nuevoUsuario = JOptionPane.showInputDialog("Ingrese el nombre del nuevo usuario:");
+                String nuevaContraseña = JOptionPane.showInputDialog("Ingrese la contraseña del nuevo usuario:");
+
+                // Verificar que no estén vacíos
+                if (nuevoUsuario != null && nuevaContraseña != null && !nuevoUsuario.trim().isEmpty() && !nuevaContraseña.trim().isEmpty()) {
+                    // Crear usuario y sus carpetas
+                    if (!sistemaArchivos.usuarioExiste(nuevoUsuario)) {
+                        sistemaArchivos.crearUsuario(nuevoUsuario, nuevaContraseña);  // Crear las carpetas del usuario
+                        JOptionPane.showMessageDialog(null, "Usuario " + nuevoUsuario + " creado con éxito.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 } else {
-                    escritorio = new EscritorioVisual();
-                    escritorio.setVisible(true);
-                    dispose();
+                    JOptionPane.showMessageDialog(null, "Error: El nombre de usuario o la contraseña no pueden estar vacíos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        
+
         setVisible(true);
     }
 
+    // Clase para gestionar el campo de texto con placeholder
     class PlaceholderTextField extends JTextField {
         private String placeholder;
+
         public PlaceholderTextField(String placeholder) {
             this.placeholder = placeholder;
             setText(placeholder);
@@ -129,7 +163,8 @@ public class InicioVisual extends JFrame {
             });
         }
     }
-    
+
+    // Clase para gestionar el campo de contraseña con placeholder
     class PlaceholderPasswordField extends JPasswordField {
         private String placeholder;
 
@@ -147,6 +182,7 @@ public class InicioVisual extends JFrame {
                         setForeground(Color.BLACK);
                     }
                 }
+
                 @Override
                 public void focusLost(FocusEvent e) {
                     if (getPassword().length == 0) {
@@ -158,7 +194,7 @@ public class InicioVisual extends JFrame {
             });
         }
     }
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new InicioVisual());
     }

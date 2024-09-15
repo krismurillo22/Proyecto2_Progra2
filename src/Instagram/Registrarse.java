@@ -10,6 +10,8 @@ package Instagram;
  */
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -126,6 +128,7 @@ public class Registrarse extends JFrame{
         gbc.gridy = 12;
         gbc.gridwidth = 2;
         add(registerButton, gbc);
+        
 
         registerButton.addActionListener(e -> {
             try {
@@ -145,7 +148,7 @@ public class Registrarse extends JFrame{
                 edad = Integer.parseInt(edadTexto);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Edad inválida. Por favor, ingrese un número válido.", "Error de formato", JOptionPane.ERROR_MESSAGE);
-                return;  // Salir del listener si la edad es inválida
+                return;
             }
             
             if (profilePictureLabel.getIcon() == null) {
@@ -199,6 +202,14 @@ public class Registrarse extends JFrame{
         } catch (IOException ex) {
             Logger.getLogger(Registrarse.class.getName()).log(Level.SEVERE, null, ex);
         }
+        });
+        
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e){
+                new MenuPrincipal().setVisible(true);
+                dispose();
+            }
         });
     }
 
